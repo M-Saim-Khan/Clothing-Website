@@ -1,8 +1,11 @@
 from django.contrib.auth.models import User
 from rest_framework import generics
-from .serializers import UserSerializer, CategorySerializer, ProductSerializer, CartItemSerializer, CartSerializer
+from .serializers import UserSerializer, CategorySerializer, ProductSerializer, CartItemSerializer, CartSerializer, ReviewsSerializer
 from rest_framework.permissions import IsAuthenticated,AllowAny, IsAdminUser
-from clothes.models import Product, Category, Cart, CartItem
+from clothes.models import Product, Category, Cart, CartItem, Reviews
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 # Create your views here.
 
 
@@ -60,3 +63,31 @@ class CartView(generics.ListAPIView):
 
     def get_queryset(self):
         return Cart.objects.filter(user=self.request.user)
+    
+
+class ReviewList(generics.ListAPIView):
+    serializer_class = ReviewsSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        return Reviews.objects.filter(product_id=self.kwargs['pk'])
+
+class ReviewCreate(generics.CreateAPIView):
+    serializer_class = ReviewsSerializer
+    permission_classes = [IsAuthenticated]
+    def perform_create(self, serializer):
+        serializer.save(author = self.request.user)
+    
+class ReviewDelete(generics.DestroyAPIView):
+    serializer_class = ReviewsSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Reviews.objects.filter(author = user)
+    
+class CurrentUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response({"id": request.user.id, "username": request.user.username})

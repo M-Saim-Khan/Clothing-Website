@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Product, Category, Cart, CartItem
+from .models import Product, Category, Cart, CartItem,Reviews
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -23,9 +23,15 @@ class ProductSerializer(serializers.ModelSerializer):
     category_id = serializers.PrimaryKeyRelatedField(
         queryset=Category.objects.all(),source='category',write_only=True
     )
+    discounted_price = serializers.SerializerMethodField()
+    
+    def get_discounted_price(self, obj):
+        if obj.price != obj.OriginalPrice:
+            return obj.price
+        return None
     class Meta:
         model = Product
-        fields=['id','title','description','price','inventory','category','category_id']
+        fields=['id','title','brand','description','OriginalPrice','discounted_price','inventory','category','category_id',]
 
 class CartItemSerializer(serializers.ModelSerializer):
     product = ProductSerializer(read_only = True)
@@ -42,3 +48,14 @@ class CartSerializer(serializers.ModelSerializer):
         model = Cart
         fields=['id','created_at','user','cartitems']
         extra_kwargs={"user":{"read_only" : True}}
+
+class ReviewsSerializer(serializers.ModelSerializer):
+    product = ProductSerializer(read_only = True)
+    product_id = serializers.PrimaryKeyRelatedField(
+        queryset = Product.objects.all(), source = 'product', write_only = True
+    )
+    author = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = Reviews
+        fields = ["id", "title", "description", "created_at", "author", "product", "product_id"]
