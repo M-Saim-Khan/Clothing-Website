@@ -1,7 +1,7 @@
 **Description:**
 - A full-stack E-Commerce platform that allows users to browse products, view detailed product information, submit reviews, manage their shopping experience, and complete purchases through a responsive web interface.
 
-**Made Using:**
+**Tools Used:**
 - Django backend exposing REST APIs
 - React frontend
 - Postgres database for persistent storage
@@ -45,8 +45,7 @@ Configured database models for:
 - Users
 - Orders
 - Reviews
-- Established persistent storage for application data
-- Added migrations and data management workflows
+- Switched the database to Postgresql from railway after uploading
   
   *Admin Dashboard:*
 - Configured Django Admin panel
@@ -64,6 +63,7 @@ Configured database models for:
 - Implemented JWT-based authentication flow
 - Fixed API communication and data synchronization issues
 - Added protected routes for authenticated users
+- Uploaded backend to railway
 
 **How to run:**
 - create a virtual environment 
